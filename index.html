@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Trill Shit Proxies</title>
+<link rel="icon" href="https://files.catbox.moe/308deu.jpg" type="image/jpeg">
+<style>
+html,body{height:100%;margin:0;font-family:"Courier New",monospace;color:#e0e0e0;background:#0c0c0c;overflow:hidden}
+canvas#snow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.page{position:relative;z-index:1;width:880px;margin:32px auto;border:2px solid #222;box-shadow:0 0 25px rgba(0,0,0,.8);background:linear-gradient(#1a1a1a,#111);border-radius:8px}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(#220033,#110022);border-bottom:2px solid #000}
+.logo{width:56px;height:56px;border:2px solid #000;background:url('https://files.catbox.moe/308deu.jpg') center/cover no-repeat;border-radius:6px}
+.title{font-size:18px;color:#fff}
+.subtitle{font-size:11px;color:#bbb}
+.content{display:flex;gap:12px;padding:12px}
+.left,.right{background:#151515;padding:12px;border:1px solid #333;border-radius:6px}
+.left{width:60%;min-height:300px}
+.right{flex:1;min-width:200px}
+label{display:block;margin:8px 0 4px;font-size:12px;color:#ccc}
+input[type=text]{width:100%;padding:6px;border:1px solid #333;border-radius:4px;background:#0d0d0d;color:#fff}
+.btn{padding:6px 10px;border:1px solid #333;border-radius:4px;background:linear-gradient(#2a2a2a,#111);color:#fff;cursor:pointer;font-weight:bold;transition:background .2s}
+.btn:hover{background:linear-gradient(#444,#222)}
+.btn-primary{background:linear-gradient(#5500ff,#220066)}
+.console{margin-top:12px;height:140px;overflow:auto;background:#000;color:#00ff90;padding:8px;font-size:12px;border:1px solid #333;border-radius:4px}
+.marquee{margin-top:8px;padding:6px;border:1px solid #333;border-radius:4px;background:#111;color:#ff99ff;font-weight:bold;text-align:center}
+footer{padding:8px 12px;font-size:12px;color:#666;text-align:center;border-top:1px solid #222;background:#0a0a0a;border-radius:0 0 8px 8px;display:flex;justify-content:space-between;align-items:center}
+.fake-ads{font-size:11px;color:#888;padding:6px;border:1px dashed #333;margin-top:10px;border-radius:4px}
+.linkish{color:#5ec3ff;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<canvas id="snow"></canvas>
+
+<div class="page">
+  <header>
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <div class="title">Trill Shit Proxies</div>
+      <div class="subtitle">made by loverr — proxy gateway</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="left">
+      <label for="url">Target address</label>
+      <input id="url" type="text" placeholder="example: service.example" value="" disabled>
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="btn btn-primary" id="fetchBtn" disabled>Fetch through proxy</button>
+        <button class="btn" id="spoofBtn" disabled>Spoof headers</button>
+      </div>
+
+      <div class="console" id="console"></div>
+      <div class="marquee" id="marq">Status: idle</div>
+      <div class="fake-ads"><b>Note:</b>made on school wifi btw</div>
+      <div id="downloadArea"></div>
+    </div>
+
+    <div class="right">
+      <div style="border:1px solid #333;border-radius:4px;padding:6px;background:#0d0d0d;">
+        <b>Proxy Info</b><br>
+        Node: trill-node-07<br>
+        Uptime: <span id="uptime">00:00:00</span><br>
+        <div style="margin-top:8px"><span class="linkish" id="inspectBtn">Inspect last request</span></div>
+        <div style="margin-top:4px"><span class="linkish" id="panicBtn">Local fetch info</span></div>
+      </div>
+      <div style="border:1px solid #333;border-radius:4px;padding:6px;background:#0d0d0d;margin-top:12px;">
+        <b>Connection Quality</b><br>
+        <div id="freshMeter" style="margin-top:6px">—</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>© Trill Shit Proxies — made by loverr — all rights reserved</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="tiny">Build: v3.98 · rev 42</div>
+      <div style="font-size:12px;color:#9aa3b2;cursor:pointer" id="adminTrigger">admin</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const consoleEl = document.getElementById('console');
+const urlInput = document.getElementById('url');
+const fetchBtn = document.getElementById('fetchBtn');
+const spoofBtn = document.getElementById('spoofBtn');
+const marq = document.getElementById('marq');
+
+async function fetchIP(){
+  try{
+    const res = await fetch('https://api.ipify.org?format=json',{cache:'no-store'});
+    const j = await res.json();
+    return j.ip || '192.168.69.' + Math.floor(Math.random()*240+1);
+  } catch(e){
+    return '192.168.69.' + Math.floor(Math.random()*240+1);
+  }
+}
+
+(async ()=>{
+  const ip = await fetchIP();
+  const nodeNum = Math.floor(Math.random()*17)+1;
+  consoleEl.innerHTML = `You are connected to node-${nodeNum} as ${ip}<br>`;
+  urlInput.disabled = false;
+  fetchBtn.disabled = false;
+  spoofBtn.disabled = false;
+  marq.textContent = "Status: connected";
+})();
+
+let start = Date.now();
+setInterval(()=>{const s=Math.floor((Date.now()-start)/1000);const h=String(Math.floor(s/3600)).padStart(2,'0');const m=String(Math.floor((s%3600)/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');document.getElementById('uptime').textContent=`${h}:${m}:${ss}`},1000);
+
+function randomFreshContent(u){return `Proxy Report
+---------------------------
+Source: ${u}
+Generated: ${new Date().toISOString()}
+
+Status: stable
+Latency(ms): ${Math.floor(Math.random()*200)}
+Server: trill-node-07
+
+-- made by loverr`; }
+function downloadTxt(n,c){const b=new Blob([c],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),600);}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+fetchBtn.addEventListener('click', async ()=>{
+  const u=urlInput.value.trim()||'http://example.com/';
+  consoleEl.innerHTML += `[${new Date().toLocaleTimeString()}] Initiating fetch to ${u} ...<br>`;
+  await wait(700+Math.random()*700);
+  consoleEl.innerHTML += `[${new Date().toLocaleTimeString()}] Performing HTTP/1.1 request...<br>`;
+  await wait(600);
+  const f=Math.floor(Math.random()*100);
+  document.getElementById('freshMeter').textContent=`${f}%`;
+  const filename='proxy_report_'+Date.now()+'.txt';
+  const content=randomFreshContent(u);
+  document.getElementById('downloadArea').innerHTML=`<button class='btn' id='dlbtn'>Download report</button>`;
+  document.getElementById('dlbtn').onclick=()=>downloadTxt(filename,content);
+  consoleEl.innerHTML += `[${new Date().toLocaleTimeString()}] Fetch complete. Report ready.<br>`;
+});
+
+spoofBtn.addEventListener('click', ()=>{
+  fetchIP().then(ip=>{
+    const headers = {
+      "X-Forwarded-For": ip,
+      "X-Real-IP": ip,
+      "Via": "1.1 trill-node-07",
+      "X-Request-ID": "req-"+Math.random().toString(36).slice(2,12),
+      "X-Proxy-Auth": "anonymous",
+      "X-Forwarded-Proto": "https",
+      "X-Forwarded-Host": "trill-proxy.local"
+    };
+    const now=new Date().toLocaleTimeString();
+    const section=document.createElement('div');
+    section.innerHTML=`[${now}] Injected headers: <br><pre style="color:#cfe8ff;margin:6px 0;padding:6px;background:#07101a;border-radius:4px">${Object.entries(headers).map(([k,v])=>`${k}: ${v}`).join('\n')}</pre>`;
+    consoleEl.appendChild(section);
+    consoleEl.scrollTop=consoleEl.scrollHeight;
+  });
+});
+
+document.getElementById('inspectBtn').addEventListener('click', ()=>{
+  const now=new Date().toLocaleTimeString();
+  const info=`Last request inspected at ${now}\nSource node: trill-node-07\nRoute: direct\nAuth: none`;
+  const section=document.createElement('div');
+  section.innerHTML=`[${now}] ${info.replace(/\n/g,'<br>')}<br>`;
+  consoleEl.appendChild(section);
+  consoleEl.scrollTop=consoleEl.scrollHeight;
+});
+document.getElementById('panicBtn').addEventListener('click', ()=>{
+  fetchIP().then(ip=>{
+    const now=new Date().toLocaleTimeString();
+    const msg=`Local fetch mode: client-side only. No external relay used.\nLocal IP: ${ip}\nMode: simulated`;
+    const section=document.createElement('div');
+    section.innerHTML=`[${now}] ${msg.replace(/\n/g,'<br>')}<br>`;
+    consoleEl.appendChild(section);
+    consoleEl.scrollTop=consoleEl.scrollHeight;
+  });
+});
+
+// --- Purple snow effect ---
+const canvas = document.createElement('canvas');
+canvas.id = 'snow';
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+let W = window.innerWidth, H = window.innerHeight;
+let snowflakes = [];
+
+function resizeSnow() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    snowflakes = [];
+    for (let i = 0; i < 120; i++) {
+        snowflakes.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 2 + 1,
+            speed: Math.random() * 0.7 + 0.3,
+            sway: Math.random() * 0.8 + 0.3
+        });
+    }
+}
+resizeSnow();
+window.addEventListener('resize', resizeSnow);
+
+let mouseX = W / 2;
+window.addEventListener('mousemove', e => mouseX = e.clientX);
+
+function drawSnow() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = "rgba(200,50,255,0.9)";
+    ctx.beginPath();
+    for (let f of snowflakes) {
+        f.y += f.speed;
+        f.x += (Math.sin(f.y * 0.01) + (mouseX - W / 2) * 0.0009) * f.sway;
+        if (f.y > H) { f.y = -10; f.x = Math.random() * W; }
+        ctx.moveTo(f.x + f.r, f.y);
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+    }
+    ctx.fill();
+    requestAnimationFrame(drawSnow);
+}
+drawSnow();
+</script>
+</body>
+</html>
