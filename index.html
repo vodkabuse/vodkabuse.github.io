@@ -1,1 +1,638 @@
-g
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Google Dork Creator</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'MS Sans Serif', 'Microsoft Sans Serif', sans-serif;
+            background:#000;
+            display:flex; justify-content:center; align-items:center;
+            min-height:100vh; padding:20px;
+            position:relative;
+            overflow:hidden;
+        }
+        body::before {
+            content:'';
+            position:absolute;
+            top:-100%; left:0; right:0; bottom:0;
+            height:200%;
+            background-image:
+                radial-gradient(2px 2px at 20% 15%, white, transparent),
+                radial-gradient(2px 2px at 60% 35%, white, transparent),
+                radial-gradient(1px 1px at 50% 25%, white, transparent),
+                radial-gradient(1px 1px at 80% 5%, white, transparent),
+                radial-gradient(2px 2px at 90% 30%, white, transparent),
+                radial-gradient(1px 1px at 33% 40%, white, transparent),
+                radial-gradient(1px 1px at 15% 30%, white, transparent),
+                radial-gradient(2px 2px at 45% 10%, white, transparent),
+                radial-gradient(1px 1px at 70% 20%, white, transparent),
+                radial-gradient(2px 2px at 25% 35%, white, transparent),
+                radial-gradient(1px 1px at 55% 15%, white, transparent),
+                radial-gradient(1px 1px at 85% 25%, white, transparent),
+                radial-gradient(2px 2px at 10% 40%, white, transparent),
+                radial-gradient(1px 1px at 40% 5%, white, transparent),
+                radial-gradient(1px 1px at 65% 30%, white, transparent),
+                radial-gradient(2px 2px at 95% 20%, white, transparent),
+                radial-gradient(1px 1px at 5% 25%, white, transparent),
+                radial-gradient(1px 1px at 75% 35%, white, transparent),
+                radial-gradient(2px 2px at 30% 45%, white, transparent),
+                radial-gradient(1px 1px at 60% 10%, white, transparent),
+                radial-gradient(2px 2px at 12% 18%, white, transparent),
+                radial-gradient(1px 1px at 48% 8%, white, transparent),
+                radial-gradient(2px 2px at 72% 42%, white, transparent),
+                radial-gradient(1px 1px at 28% 22%, white, transparent),
+                radial-gradient(1px 1px at 88% 38%, white, transparent),
+                radial-gradient(2px 2px at 38% 28%, white, transparent),
+                radial-gradient(1px 1px at 62% 48%, white, transparent),
+                radial-gradient(1px 1px at 18% 12%, white, transparent),
+                radial-gradient(2px 2px at 52% 32%, white, transparent),
+                radial-gradient(1px 1px at 92% 16%, white, transparent),
+                radial-gradient(1px 1px at 8% 36%, white, transparent),
+                radial-gradient(2px 2px at 42% 44%, white, transparent),
+                radial-gradient(1px 1px at 78% 14%, white, transparent),
+                radial-gradient(1px 1px at 22% 26%, white, transparent),
+                radial-gradient(2px 2px at 68% 6%, white, transparent),
+                radial-gradient(1px 1px at 35% 38%, white, transparent),
+                radial-gradient(1px 1px at 58% 24%, white, transparent),
+                radial-gradient(2px 2px at 82% 46%, white, transparent),
+                radial-gradient(1px 1px at 14% 34%, white, transparent),
+                radial-gradient(1px 1px at 46% 19%, white, transparent);
+            background-size:100% 100%;
+            opacity:0.6;
+            pointer-events:none;
+            animation:rain 8s linear infinite;
+            transition:transform 0.1s ease-out;
+        }
+        @keyframes rain {
+            0% { transform:translateY(0) translateX(var(--mouse-x, 0px)); }
+            100% { transform:translateY(50%) translateX(var(--mouse-x, 0px)); }
+        }
+        .window {
+            background:#2a2a2a;
+            border:2px solid;
+            border-color:#404040 #000 #000 #404040;
+            box-shadow:4px 4px 0 rgba(0,0,0,0.4);
+            width:90vw;
+            max-width:700px;
+            max-height:90vh;
+            position:relative;
+            z-index:1;
+            display:flex;
+            flex-direction:column;
+        }
+        .title-bar {
+            background:linear-gradient(90deg, #000080, #1084d0);
+            color:white;
+            padding:3px 4px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            font-weight:bold;
+            font-size:11px;
+        }
+        .title-text {
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .title-buttons {
+            display:flex;
+            gap:2px;
+        }
+        .title-btn {
+            width:16px;
+            height:14px;
+            background:#c0c0c0;
+            border:1px solid;
+            border-color:#fff #000 #000 #fff;
+            font-size:9px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-weight:bold;
+            color:#000;
+        }
+        .title-btn:active {
+            border-color:#000 #fff #fff #000;
+        }
+        .content {
+            padding:12px;
+            background:#2a2a2a;
+            overflow-y:auto;
+            flex:1;
+        }
+        .group-box {
+            border:2px solid;
+            border-color:#1a1a1a #505050 #505050 #1a1a1a;
+            padding:14px 10px 10px 10px;
+            margin-bottom:10px;
+            position:relative;
+            background:#333;
+        }
+        .group-title {
+            position:absolute;
+            top:-8px;
+            left:8px;
+            background:#2a2a2a;
+            padding:0 4px;
+            font-size:11px;
+            font-weight:bold;
+            color:#ccc;
+        }
+        label {
+            display:block;
+            margin-bottom:3px;
+            font-size:11px;
+            color:#bbb;
+        }
+        input[type="text"], textarea, select {
+            width:100%;
+            padding:3px;
+            border:2px solid;
+            border-color:#1a1a1a #505050 #505050 #1a1a1a;
+            font-family:'Courier New', monospace;
+            font-size:11px;
+            background:#1a1a1a;
+            color:#fff;
+        }
+        textarea {
+            min-height:60px;
+            resize:vertical;
+        }
+        .grid {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:8px;
+        }
+        .input-group {
+            margin-bottom:8px;
+        }
+        .operators {
+            display:flex;
+            flex-wrap:wrap;
+            gap:12px;
+            margin-bottom:8px;
+        }
+        .operator-item {
+            display:flex;
+            align-items:center;
+            gap:4px;
+            font-size:11px;
+        }
+        input[type="checkbox"] {
+            width:13px;
+            height:13px;
+        }
+        .button-group {
+            display:flex;
+            gap:8px;
+            margin-top:8px;
+            justify-content:center;
+        }
+        .button {
+            background:#3a3a3a;
+            border:2px solid;
+            border-color:#505050 #1a1a1a #1a1a1a #505050;
+            padding:4px 12px;
+            font-size:11px;
+            cursor:pointer;
+            font-family:'MS Sans Serif', sans-serif;
+            min-width:75px;
+            color:#ccc;
+        }
+        .button:active {
+            border-color:#1a1a1a #505050 #505050 #1a1a1a;
+            padding:5px 11px 3px 13px;
+        }
+        .button:disabled {
+            color:#555;
+            cursor:not-allowed;
+        }
+        .ethics {
+            background:#333;
+            border:2px solid;
+            border-color:#505050 #1a1a1a #1a1a1a #505050;
+            padding:8px;
+            margin-top:8px;
+        }
+        .ethics label {
+            display:flex;
+            align-items:start;
+            gap:6px;
+            font-size:11px;
+            margin-bottom:6px;
+            color:#bbb;
+        }
+        .ethics input[type="checkbox"] {
+            margin-top:1px;
+            flex-shrink:0;
+        }
+        .notice {
+            font-size:10px;
+            color:#999;
+            line-height:1.4;
+            margin-top:4px;
+        }
+        .examples {
+            background:#333;
+            border:1px solid #1a1a1a;
+            padding:8px;
+            margin-top:8px;
+            font-size:11px;
+        }
+        .examples strong {
+            display:block;
+            margin-bottom:4px;
+            color:#ccc;
+        }
+        .examples ul {
+            list-style:none;
+            padding:0;
+            margin:0;
+        }
+        .examples li {
+            margin-bottom:3px;
+            line-height:1.4;
+            color:#999;
+        }
+        .examples code {
+            font-family:'Courier New', monospace;
+            font-size:10px;
+            color:#5af;
+        }
+        .status-bar {
+            background:#2a2a2a;
+            border-top:1px solid #505050;
+            padding:2px 4px;
+            font-size:11px;
+            display:flex;
+            gap:4px;
+            align-items:center;
+        }
+        .status-section {
+            border:1px solid;
+            border-color:#1a1a1a #505050 #505050 #1a1a1a;
+            padding:2px 4px;
+            flex:1;
+            color:#bbb;
+        }
+        .credit {
+            font-size:10px;
+            color:#666;
+            padding:2px 8px;
+            white-space:nowrap;
+        }
+        .hint {
+            font-size:10px;
+            color:#888;
+            margin-top:2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-text">
+                <span>🔎</span>
+                <span>Google Dork Creator</span>
+            </div>
+            <div class="title-buttons">
+                <div class="title-btn">_</div>
+                <div class="title-btn">□</div>
+                <div class="title-btn">×</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="group-box">
+                <div class="group-title">Search Terms</div>
+                
+                <div class="input-group">
+                    <label for="keywords">Keywords:</label>
+                    <input id="keywords" type="text" placeholder="privacy report annual" />
+                </div>
+
+                <div class="grid">
+                    <div>
+                        <label for="exact">Exact phrase:</label>
+                        <input id="exact" type="text" placeholder="security policy" />
+                    </div>
+                    <div>
+                        <label for="exclude">Exclude words:</label>
+                        <input id="exclude" type="text" placeholder="draft confidential" />
+                    </div>
+                </div>
+
+                <div class="grid" style="margin-top:8px;">
+                    <div>
+                        <label for="site">Site / Domain:</label>
+                        <input id="site" type="text" placeholder="example.com" />
+                    </div>
+                    <div>
+                        <label for="filetype">File Type:</label>
+                        <select id="filetype">
+                            <option value="">(any)</option>
+                            <option value="pdf">pdf</option>
+                            <option value="docx">docx</option>
+                            <option value="pptx">pptx</option>
+                            <option value="xlsx">xlsx</option>
+                            <option value="txt">txt</option>
+                            <option value="html">html</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-box">
+                <div class="group-title">Operators</div>
+                
+                <div class="operators">
+                    <label class="operator-item">
+                        <input type="checkbox" id="op_intitle" />
+                        <span>intitle:</span>
+                    </label>
+                    <label class="operator-item">
+                        <input type="checkbox" id="op_inurl" />
+                        <span>inurl:</span>
+                    </label>
+                    <label class="operator-item">
+                        <input type="checkbox" id="op_intext" />
+                        <span>intext:</span>
+                    </label>
+                    <label class="operator-item">
+                        <input type="checkbox" id="op_allintitle" />
+                        <span>allintitle:</span>
+                    </label>
+                    <label class="operator-item">
+                        <input type="checkbox" id="op_allinurl" />
+                        <span>allinurl:</span>
+                    </label>
+                </div>
+
+                <div>
+                    <label>Date Filters (optional):</label>
+                    <div class="hint">Format: YYYY-MM-DD</div>
+                    <div class="grid" style="margin-top:4px;">
+                        <input id="after" type="text" placeholder="after:2023-01-01" />
+                        <input id="before" type="text" placeholder="before:2025-12-31" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-box">
+                <div class="group-title">Generated Query</div>
+                
+                <label for="dorkPreview">Query:</label>
+                <textarea id="dorkPreview" readonly placeholder="Your search query will appear here"></textarea>
+
+                <div class="button-group">
+                    <button class="button" id="generateBtn">Generate</button>
+                    <button class="button" id="copyBtn" disabled>Copy</button>
+                    <button class="button" id="clearBtn">Clear</button>
+                </div>
+
+                <div class="group-box" style="margin-top:12px;">
+                    <div class="group-title">Search Engines</div>
+                    <label style="margin-bottom:6px;">Open query in:</label>
+                    <div class="button-group" style="margin-top:4px; flex-wrap:wrap;">
+                        <button class="button" id="googleBtn" disabled>Google</button>
+                        <button class="button" id="bingBtn" disabled>Bing</button>
+                        <button class="button" id="duckBtn" disabled>DuckDuckGo</button>
+                        <button class="button" id="yahooBtn" disabled>Yahoo</button>
+                        <button class="button" id="yandexBtn" disabled>Yandex</button>
+                    </div>
+                </div>
+
+                <div class="ethics">
+                    <label>
+                        <input type="checkbox" id="ethicalCheck" />
+                        <span>I confirm I will use this tool only for lawful, ethical, and non-invasive research</span>
+                    </label>
+                    <div class="notice">
+                        <strong>Notice:</strong> This tool helps build advanced Google queries for public information. Do not use it to search for credentials, private data, or attempt unauthorized access. Respect websites' terms of service and the law.
+                    </div>
+                </div>
+
+                <div class="examples">
+                    <strong>Examples:</strong>
+                    <ul>
+                        <li><code>site:example.com filetype:pdf "annual report" intitle:"privacy"</code></li>
+                        <li><code>intitle:"user guide" filetype:pdf "Model X"</code></li>
+                        <li><code>site:gov.uk "climate change" filetype:pdf</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-section" id="statusText">Ready</div>
+            <div class="credit">Made by белька</div>
+        </div>
+    </div>
+
+<script>
+    const keywordsEl = document.getElementById('keywords');
+    const exactEl = document.getElementById('exact');
+    const excludeEl = document.getElementById('exclude');
+    const siteEl = document.getElementById('site');
+    const filetypeEl = document.getElementById('filetype');
+    const afterEl = document.getElementById('after');
+    const beforeEl = document.getElementById('before');
+
+    const opIntitle = document.getElementById('op_intitle');
+    const opInurl = document.getElementById('op_inurl');
+    const opIntext = document.getElementById('op_intext');
+    const opAllintitle = document.getElementById('op_allintitle');
+    const opAllinurl = document.getElementById('op_allinurl');
+
+    const preview = document.getElementById('dorkPreview');
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const ethicalCheck = document.getElementById('ethicalCheck');
+    const statusText = document.getElementById('statusText');
+    
+    const googleBtn = document.getElementById('googleBtn');
+    const bingBtn = document.getElementById('bingBtn');
+    const duckBtn = document.getElementById('duckBtn');
+    const yahooBtn = document.getElementById('yahooBtn');
+    const yandexBtn = document.getElementById('yandexBtn');
+
+    // Mouse tracking for stars
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX - window.innerWidth / 2) / 20;
+        document.body.style.setProperty('--mouse-x', `${x}px`);
+    });
+
+    function sanitizeInput(s) {
+        return s.trim();
+    }
+
+    function buildOperatorPrefix(operator, term) {
+        if (!term) return '';
+        term = term.trim();
+        if (term.includes(' ')) term = `"${term}"`;
+        return `${operator}:${term}`;
+    }
+
+    function buildDork() {
+        if (!ethicalCheck.checked) {
+            statusText.textContent = 'Please confirm ethical use';
+            return '';
+        }
+
+        const keywords = sanitizeInput(keywordsEl.value);
+        const exact = sanitizeInput(exactEl.value);
+        const exclude = sanitizeInput(excludeEl.value);
+        const site = sanitizeInput(siteEl.value);
+        const filetype = sanitizeInput(filetypeEl.value);
+        const after = sanitizeInput(afterEl.value);
+        const before = sanitizeInput(beforeEl.value);
+
+        let parts = [];
+
+        if (exact) {
+            if (opAllintitle.checked) parts.push(buildOperatorPrefix('allintitle', exact));
+            else if (opIntitle.checked) parts.push(buildOperatorPrefix('intitle', exact));
+
+            if (opAllinurl.checked) parts.push(buildOperatorPrefix('allinurl', exact));
+            else if (opInurl.checked) parts.push(buildOperatorPrefix('inurl', exact));
+
+            if (opIntext.checked) parts.push(buildOperatorPrefix('intext', exact));
+
+            parts.push(`"${exact}"`);
+        }
+
+        if (keywords) {
+            const kws = keywords.split(/\s+/).filter(Boolean);
+            if (opAllintitle.checked) parts.push(`allintitle:${kws.join('+')}`);
+            else if (opAllinurl.checked) parts.push(`allinurl:${kws.join('+')}`);
+            else {
+                if (opIntitle.checked) parts = parts.concat(kws.map(k => buildOperatorPrefix('intitle', k)));
+                if (opInurl.checked) parts = parts.concat(kws.map(k => buildOperatorPrefix('inurl', k)));
+                if (opIntext.checked) parts = parts.concat(kws.map(k => buildOperatorPrefix('intext', k)));
+                parts.push(kws.join(' '));
+            }
+        }
+
+        if (exclude) {
+            const ex = exclude.split(/\s+/).filter(Boolean).map(e => `-${e}`).join(' ');
+            parts.push(ex);
+        }
+
+        if (site) {
+            const s = site.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+            parts.push(`site:${s}`);
+        }
+
+        if (filetype) {
+            parts.push(`filetype:${filetype}`);
+        }
+
+        if (after) parts.push(`after:${after}`);
+        if (before) parts.push(`before:${before}`);
+
+        let query = parts.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+        return query || '';
+    }
+
+    generateBtn.addEventListener('click', () => {
+        const q = buildDork();
+        if (!q) {
+            preview.value = '';
+            copyBtn.disabled = true;
+            googleBtn.disabled = true;
+            bingBtn.disabled = true;
+            duckBtn.disabled = true;
+            yahooBtn.disabled = true;
+            yandexBtn.disabled = true;
+            if (ethicalCheck.checked) statusText.textContent = 'No terms provided';
+            return;
+        }
+        preview.value = q;
+        copyBtn.disabled = false;
+        googleBtn.disabled = false;
+        bingBtn.disabled = false;
+        duckBtn.disabled = false;
+        yahooBtn.disabled = false;
+        yandexBtn.disabled = false;
+        statusText.textContent = 'Query ready';
+    });
+
+    copyBtn.addEventListener('click', async () => {
+        const text = preview.value;
+        if (!text) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            statusText.textContent = 'Copied to clipboard';
+        } catch (e) {
+            preview.select();
+            document.execCommand('copy');
+            statusText.textContent = 'Copied';
+        }
+    });
+
+    googleBtn.addEventListener('click', () => {
+        const query = encodeURIComponent(preview.value);
+        window.open(`https://www.google.com/search?q=${query}`, '_blank');
+        statusText.textContent = 'Opened in Google';
+    });
+
+    bingBtn.addEventListener('click', () => {
+        const query = encodeURIComponent(preview.value);
+        window.open(`https://www.bing.com/search?q=${query}`, '_blank');
+        statusText.textContent = 'Opened in Bing';
+    });
+
+    duckBtn.addEventListener('click', () => {
+        const query = encodeURIComponent(preview.value);
+        window.open(`https://duckduckgo.com/?q=${query}`, '_blank');
+        statusText.textContent = 'Opened in DuckDuckGo';
+    });
+
+    yahooBtn.addEventListener('click', () => {
+        const query = encodeURIComponent(preview.value);
+        window.open(`https://search.yahoo.com/search?p=${query}`, '_blank');
+        statusText.textContent = 'Opened in Yahoo';
+    });
+
+    yandexBtn.addEventListener('click', () => {
+        const query = encodeURIComponent(preview.value);
+        window.open(`https://yandex.com/search/?text=${query}`, '_blank');
+        statusText.textContent = 'Opened in Yandex';
+    });
+
+    clearBtn.addEventListener('click', () => {
+        keywordsEl.value = '';
+        exactEl.value = '';
+        excludeEl.value = '';
+        siteEl.value = '';
+        filetypeEl.value = '';
+        afterEl.value = '';
+        beforeEl.value = '';
+        opIntitle.checked = false;
+        opInurl.checked = false;
+        opIntext.checked = false;
+        opAllintitle.checked = false;
+        opAllinurl.checked = false;
+        preview.value = '';
+        ethicalCheck.checked = false;
+        copyBtn.disabled = true;
+        googleBtn.disabled = true;
+        bingBtn.disabled = true;
+        duckBtn.disabled = true;
+        yahooBtn.disabled = true;
+        yandexBtn.disabled = true;
+        statusText.textContent = 'Cleared';
+    });
+
+    keywordsEl.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') generateBtn.click();
+    });
+</script>
+</body>
+</html>
